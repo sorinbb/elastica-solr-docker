@@ -1,0 +1,45 @@
+version: "2"
+services:
+    elastic:
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+        container_name: fenix-elastic
+        env_file: .env
+        environment:
+            - bootstrap.memory_lock=true
+            - xpack.security.enabled=false
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        volumes:
+          - ./data/es:/usr/share/elasticsearch/data
+        restart: always
+        expose:
+          - "9200:9200"
+
+    mongodb:
+        image: mongo:latest
+        container_name: fenix-mongo
+        environment:
+          - MONGO_DATA_DIR=/data/db
+          - MONGO_LOG_DIR=/dev/null
+        restart: always
+        volumes:
+          - ./data/db:/data/db:delegated
+        ports:
+          - "27017:27017"
+
+    solr:
+        image: solr
+        container_name: fenix-solr
+        restart: always
+        ports:
+         - "8983:8983"
+        volumes:
+          - data:/opt/solr/server/solr/mycores
+        entrypoint:
+          - docker-entrypoint.sh
+          - solr-precreate
+          - mycore
+volumes:
+    data:
