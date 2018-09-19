@@ -14,11 +14,9 @@ services:
                 soft: -1
                 hard: -1
         volumes:
-          - ./data/es:/usr/share/elasticsearch/data
+          - ./data/elastic:/usr/share/elasticsearch/data
         ports:
           - 9200:9200
-        networks:
-          - esnet
         restart: always
 
     mongodb:
@@ -29,24 +27,19 @@ services:
           - MONGO_LOG_DIR=/dev/null
         restart: always
         volumes:
-          - ./data/db:/data/db:delegated
+          - ./data/mongo:/data/db:delegated
         ports:
           - "27017:27017"
 
-    solr:
-        image: solr
-        container_name: fenix-solr
+    solr.5.5:
+        image: solr:5.5
+        container_name: fenix-solr.5.5
         restart: always
         ports:
          - "8983:8983"
         volumes:
-          - data:/opt/solr/server/solr/mycores
+          - ./data/solr.5.5:/opt/solr/server/solr.5.5/mycores
         entrypoint:
           - docker-entrypoint.sh
           - solr-precreate
-          - mycore
-volumes:
-    data:
-
-networks:
-    esnet:
+          - arabestates
