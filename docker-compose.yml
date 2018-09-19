@@ -5,17 +5,21 @@ services:
         container_name: fenix-elastic
         env_file: .env
         environment:
-            - bootstrap.memory_lock=true
-            - xpack.security.enabled=false
+          - xpack.security.enabled=false
+          - cluster.name=docker-cluster
+          - bootstrap.memory_lock=true
+          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         ulimits:
             memlock:
                 soft: -1
                 hard: -1
         volumes:
           - ./data/es:/usr/share/elasticsearch/data
+        ports:
+          - 9200:9200
+        networks:
+          - esnet
         restart: always
-        expose:
-          - "9200:9200"
 
     mongodb:
         image: mongo:latest
@@ -43,3 +47,6 @@ services:
           - mycore
 volumes:
     data:
+
+networks:
+    esnet:
